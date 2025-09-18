@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   // 3. Get your secret API key from Vercel's "Environment Variables"
   // process.env.GEMINI_API_KEY is the secure way to access it
   const API_KEY = process.env.GEMINI_API_KEY;
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AIzaSyBpIHC8j2O0AxHvyqjpyUAy4EM3exh2REI}`;
 
   // 4. Define your all-important System Prompt
   const MENTAL_HEALTH_SYSTEM_PROMPT = `You are 'Aura,' an empathetic and supportive listening assistant for mental wellness. Your role is to be a kind and non-judgmental space for users to express their feelings.
