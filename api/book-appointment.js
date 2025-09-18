@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
     
     // IMPORTANT: Replace this with your actual Spreadsheet ID
-    const spreadsheetId = 'https://docs.google.com/spreadsheets/d/1-xnpAGhOd8kQgyYKYCPexdXHLt5fT_9WaJl1XcD6o_8/edit?gid=0#gid=0YOUR_SPREADSHEET_ID_HERE'; 
+    const spreadsheetId = 'https://docs.google.com/spreadsheets/d/1-xnpAGhOd8kQgyYKYCPexdXHLt5fT_9WaJl1XcD6o_8/edit?gid=0#gid=0'; 
     
     // Append the data to your sheet
     await sheets.spreadsheets.values.append({
