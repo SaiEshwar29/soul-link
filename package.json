@@ -1,0 +1,8 @@
+{
+  "name": "soul-link-backend",
+  "version": "1.0.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "googleapis": "^105.0.0"
+  }
+}

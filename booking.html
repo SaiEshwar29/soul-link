@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book an Appointment - Soul Link</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left-group">
+            <a href="index.html" class="logo-link"><div class="logo"></div></a>
+            <button class="menu-icon" id="menu-toggle"><i class="fas fa-bars"></i></button>
+            <div class="dropdown-menu" id="dropdown-menu">
+                <a href="index.html">Home</a>
+                <a href="resources.html">Resources</a>
+                <a href="booking.html">Book Session</a> </div>
+        </div>
+        <div class="nav-right-group">
+            <a href="auth.html#login"><button class="nav-button">Login</button></a>
+        </div>
+    </header>
+
+    <main class="content-area">
+        <h1>Book a Confidential Session</h1>
+        <p>Your privacy is our priority. Please select a time that works for you.</p>
+        
+        <form id="booking-form" class="form-container">
+            <div class="input-group">
+                <label for="student-id">Your Student ID (Anonymous)</label>
+                <input type="text" id="student-id" placeholder="e.g., A-123-XYZ" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="counsellor">Choose a Counsellor</label>
+                <select id="counsellor" required>
+                    <option value="Dr. Anita Sharma">Dr. Anita Sharma</option>
+                    <option value="Mr. Rohan Verma">Mr. Rohan Verma</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="appointment-time">Select Date and Time</label>
+                <input type="datetime-local" id="appointment-time" required>
+            </div>
+            
+            <button type="submit" class="submit-btn">Book Appointment</button>
+            <p id="form-status"></p> </form>
+    </main>
+
+    <script src="booking.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
