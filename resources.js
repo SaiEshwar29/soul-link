@@ -1,6 +1,6 @@
 // 1. Add your Supabase credentials
-const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Paste your Project URL here
-const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Paste your anon public Project API Key here
+const SUPABASE_URL = 'https://qvocyxwvlazbvpdsppsa.supabase.co'; // Paste your Project URL here
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2b2N5eHd2bGF6YnZwZHNwcHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDkzNDgsImV4cCI6MjA3Mzc4NTM0OH0.8EoOG5KMG4HYX4j2jrNOQnlJFzHJwfdAYF1D3Rj7dds'; // Paste your anon public Project API Key here
 
 // 2. Initialize the Supabase client
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
