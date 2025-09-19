@@ -29,19 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (navRightGroup) {
                 navRightGroup.innerHTML = '<button id="logout-button" class="nav-button">Logout</button>';
                 
-                // Add click event for the new logout button
                 const logoutButton = document.getElementById('logout-button');
                 if (logoutButton) {
                     logoutButton.addEventListener('click', async () => {
                         await supabaseClient.auth.signOut();
-                        window.location.reload(); // Reload the page to lock features
+                        window.location.reload(); // Reload page to lock features
                     });
                 }
             }
 
         } else {
             // --- USER IS LOGGED OUT ---
-            // 1. Lock feature blocks (this is the default state in the HTML)
+            // 1. Add locked class (HTML has it by default, but this ensures it)
             if (mentorBlock) mentorBlock.classList.add('locked');
             if (chatbotBlock) chatbotBlock.classList.add('locked');
 
@@ -75,10 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. Mentor & Chatbot Modal/Window Logic ---
-    // This code still handles opening the windows, but only if they are unlocked
-    
-    // Mentor Block
+    // --- 4. Mentor & Chatbot Modal/Window Logic (for logged-in users) ---
     const mentorBlock = document.getElementById('mentorBlock');
     const fullscreenMentor = document.getElementById('fullscreenMentor');
     const closeMentorButton = document.getElementById('closeMentor');
@@ -96,12 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Chatbot
     const chatbotBlock = document.getElementById('chatbotBlock');
     const closeChatButton = document.getElementById('closeChat');
     if (chatbotBlock && closeChatButton) {
         chatbotBlock.addEventListener('click', () => {
-            // Only open if NOT locked
             if (!chatbotBlock.classList.contains('locked')) {
                 chatbotBlock.classList.add('expanded');
                 document.body.style.overflow = 'hidden';
@@ -114,6 +108,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Note: The sendMessage logic for the chatbot is now in its own part of the code
-    // This is just for opening/closing the window
+    // --- 5. Auth Page Tab-Switching Logic ---
+    const showLoginBtn = document.getElementById('show-login');
+    const showSignupBtn = document.getElementById('show-signup');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    if (showLoginBtn && showSignupBtn && loginForm && signupForm) {
+        showLoginBtn.addEventListener('click', () => {
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+            showLoginBtn.classList.add('active');
+            showSignupBtn.classList.remove('active');
+        });
+        showSignupBtn.addEventListener('click', () => {
+            loginForm.classList.remove('active');
+            signupForm.classList.add('active');
+            showLoginBtn.classList.remove('active');
+            showSignupBtn.classList.add('active');
+        });
+        // Set default tab based on URL or to Login
+        const currentHash = window.location.hash;
+        if (currentHash === '#signup') {
+            showSignupBtn.click();
+        } else {
+            showLoginBtn.click();
+        }
+    }
 });
