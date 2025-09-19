@@ -1,22 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import { google } from 'googleapis';
 
-// This is your new backend function in /api/book-appointment.js
-
 export default async function handler(req, res) {
-  // 1. Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Only POST requests are allowed' });
   }
 
   try {
-    const { student_id, counsellor_name, appointment_time } = req.body;
+    const { user_id, student_id, counsellor_name, appointment_time } = req.body;
 
     // --- Part A: Save to Supabase ---
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
     const { data: supabaseData, error: supabaseError } = await supabase
       .from('appointments')
-      .insert([{ student_id, counsellor_name, appointment_time, status: 'booked' }])
+      .insert([{ user_id, student_id, counsellor_name, appointment_time, status: 'booked' }])
       .select();
 
     if (supabaseError) {
@@ -31,19 +28,16 @@ export default async function handler(req, res) {
     });
     const sheets = google.sheets({ version: 'v4', auth });
     
-    // IMPORTANT: Replace this with your actual Spreadsheet ID
-   // Correct Code
-       const spreadsheetId = '1-xnpAGhOd8kQgyYKYCPexdXHLt5fT_9WaJl1XcD6o_8';
+    const spreadsheetId = process.env.SPREADSHEET_ID; // Use environment variable for ID
     
-    // Append the data to your sheet
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Sheet1!A:E', // Make sure this matches your sheet name and columns
+      range: 'Sheet1!A:E',
       valueInputOption: 'USER_ENTERED',
       resource: {
         values: [
           [
-            supabaseData[0].id, // Get the ID from the Supabase record
+            supabaseData[0].id,
             student_id,
             counsellor_name,
             appointment_time,
@@ -57,6 +51,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error in booking function:', error);
-    res.status(500).json({ message: 'An error occurred.' });
+    res.status(500).json({ message: `An error occurred: ${error.message}` });
   }
 }

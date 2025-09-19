@@ -30,39 +30,30 @@
 
 </header>
 
-    <main class="content-area">
-        <div class="content-container">
-            <div class="content-block mentor-block" id="mentorBlock">
-                <h2>MENTOR</h2>
-            </div>
-            
-            <div class="content-block chatbot-block" id="chatbotBlock">
-                <h2>CHAT BOT</h2>
-                <div class="chatbot-window" id="chatbotWindow">
-                    <div class="chat-header">
-                        <div class="chat-logo"></div> <div class="chat-title">Chatbot</div>
-                        <button class="close-chat" id="closeChat">&times;</button>
-                    </div>
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message received">Hello! How can I help you today?</div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chatInput" placeholder="Type your message...">
-                        <button id="sendMessage"><i class="fas fa-arrow-right"></i></button>
-                    </div>
-                </div>
-            </div>
+   <main class="content-area">
+    <div class="content-container">
+        
+        <div class="content-block mentor-block locked" id="mentorBlock">
+            <h2>MENTOR</h2>
+            <div class="lock-overlay">🔒</div>
+        </div>
+        
+        <div class="content-block chatbot-block locked" id="chatbotBlock">
+            <h2>CHAT BOT</h2>
+            <div class="lock-overlay">🔒</div>
         </div>
 
-        <div class="fullscreen-mentor" id="fullscreenMentor">
-            <button class="close-fullscreen" id="closeMentor">&times;</button>
-            <div class="fullscreen-content">
-                <h1>Your Mentor Content Goes Here</h1>
-                <p>This space can be used for detailed mentor information, resources, or interactive tools.</p>
-                <p>Feel free to customize this area with anything you need for your mentor section.</p>
-                </div>
+    </div>
+
+    <div class="fullscreen-mentor" id="fullscreenMentor">
+        <button class="close-fullscreen" id="closeMentor">&times;</button>
+        <div class="fullscreen-content">
+            <h1>Your Mentor Content Goes Here</h1>
+            <p>This space can be used for detailed mentor information, resources, or interactive tools.</p>
         </div>
-    </main>
+    </div>
+
+</main>
 
     <script src="script.js"></script> </body>
 </html>

@@ -1,17 +1,73 @@
-// Wait for the entire page to load before running any script
+// script.js - Main script for your website
+
+// --- 1. Initialize Supabase Client ---
+const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Paste your Project URL here
+const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Paste your anon public Project API Key here
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+// Wait for the page to load before running scripts
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. Navbar Dropdown Logic (for all pages) ---
+    // --- 2. Handle User Login State (Lock/Unlock Features) ---
+    async function handleAuthStateChange() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        const mentorBlock = document.getElementById('mentorBlock');
+        const chatbotBlock = document.getElementById('chatbotBlock');
+        const navRightGroup = document.querySelector('.nav-right-group');
+
+        if (session) {
+            // --- USER IS LOGGED IN ---
+            // 1. Unlock feature blocks
+            if (mentorBlock) mentorBlock.classList.remove('locked');
+            if (chatbotBlock) chatbotBlock.classList.remove('locked');
+            
+            // 2. Change "Login" button to a "Logout" button in the navbar
+            if (navRightGroup) {
+                navRightGroup.innerHTML = '<button id="logout-button" class="nav-button">Logout</button>';
+                
+                // Add click event for the new logout button
+                const logoutButton = document.getElementById('logout-button');
+                if (logoutButton) {
+                    logoutButton.addEventListener('click', async () => {
+                        await supabaseClient.auth.signOut();
+                        window.location.reload(); // Reload the page to lock features
+                    });
+                }
+            }
+
+        } else {
+            // --- USER IS LOGGED OUT ---
+            // 1. Lock feature blocks (this is the default state in the HTML)
+            if (mentorBlock) mentorBlock.classList.add('locked');
+            if (chatbotBlock) chatbotBlock.classList.add('locked');
+
+            // 2. Make locked blocks redirect to the login page on click
+            const redirectToAuth = () => { window.location.href = '/auth.html'; };
+            if (mentorBlock) mentorBlock.addEventListener('click', redirectToAuth);
+            if (chatbotBlock) chatbotBlock.addEventListener('click', redirectToAuth);
+
+            // 3. Ensure the "Login" button is shown in the navbar
+            if (navRightGroup) {
+                navRightGroup.innerHTML = '<a href="auth.html"><button class="nav-button">Login</button></a>';
+            }
+        }
+    }
+    // Run the auth check when the page loads
+    handleAuthStateChange();
+
+
+    // --- 3. Navbar Dropdown Logic ---
     const menuToggle = document.getElementById('menu-toggle');
     const dropdownMenu = document.getElementById('dropdown-menu');
-
     if (menuToggle && dropdownMenu) {
         menuToggle.addEventListener('click', (event) => {
             dropdownMenu.classList.toggle('show');
-            event.stopPropagation(); // Stop click from closing menu immediately
+            event.stopPropagation();
         });
-
-        // Close dropdown if clicking anywhere else on the page
         document.addEventListener('click', (event) => {
             if (dropdownMenu.classList.contains('show') && !menuToggle.contains(event.target)) {
                 dropdownMenu.classList.remove('show');
@@ -19,165 +75,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 2. Mentor Block Logic (for index.html) ---
+    // --- 4. Mentor & Chatbot Modal/Window Logic ---
+    // This code still handles opening the windows, but only if they are unlocked
+    
+    // Mentor Block
     const mentorBlock = document.getElementById('mentorBlock');
     const fullscreenMentor = document.getElementById('fullscreenMentor');
     const closeMentorButton = document.getElementById('closeMentor');
-
     if (mentorBlock && fullscreenMentor && closeMentorButton) {
-        // Click the block to open the fullscreen view
         mentorBlock.addEventListener('click', () => {
-            fullscreenMentor.classList.add('show');
-            document.body.style.overflow = 'hidden'; // Stop page scrolling
+            // Only open if NOT locked
+            if (!mentorBlock.classList.contains('locked')) {
+                fullscreenMentor.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
         });
-
-        // Click the 'X' to close the fullscreen view
         closeMentorButton.addEventListener('click', () => {
             fullscreenMentor.classList.remove('show');
-            document.body.style.overflow = 'auto'; // Re-enable page scrolling
+            document.body.style.overflow = 'auto';
         });
     }
 
-    // --- 3. Chatbot Logic (for index.html) ---
+    // Chatbot
     const chatbotBlock = document.getElementById('chatbotBlock');
-    const chatbotWindow = document.getElementById('chatbotWindow');
     const closeChatButton = document.getElementById('closeChat');
-    const chatInput = document.getElementById('chatInput');
-    const sendMessageButton = document.getElementById('sendMessage');
-    const chatMessages = document.getElementById('chatMessages');
-
-    if (chatbotBlock && closeChatButton && chatInput && chatMessages) {
-        
-        // Click the block to expand the chat
-        chatbotBlock.addEventListener('click', (event) => {
-            // Only expand if it's not already expanded
-            if (!chatbotBlock.classList.contains('expanded')) {
+    if (chatbotBlock && closeChatButton) {
+        chatbotBlock.addEventListener('click', () => {
+            // Only open if NOT locked
+            if (!chatbotBlock.classList.contains('locked')) {
                 chatbotBlock.classList.add('expanded');
-                document.body.style.overflow = 'hidden'; // Stop page scrolling
-                chatInput.focus(); // Automatically focus the text input
+                document.body.style.overflow = 'hidden';
             }
         });
-
-        // Click the 'X' to close the chat
         closeChatButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // IMPORTANT: Stops the click from bubbling up to chatbotBlock
+            event.stopPropagation();
             chatbotBlock.classList.remove('expanded');
-            document.body.style.overflow = 'auto'; // Re-enable page scrolling
-        });
-
-        // --- Chat Send Message Functionality ---
-        // This is inside your "3. Chatbot Logic" block in script.js
-
-        // We need a variable to store the chat history
-        let chatHistory = [];
-
-        const sendMessage = async () => { // Make the function "async"
-            const messageText = chatInput.value.trim();
-            if (messageText === "") return;
-
-            // 1. Add the user's message to the chat UI
-            const sentMessageDiv = document.createElement('div');
-            sentMessageDiv.classList.add('message', 'sent');
-            sentMessageDiv.textContent = messageText;
-            chatMessages.appendChild(sentMessageDiv);
-
-            // 2. Add the user's message to our history variable
-            chatHistory.push({
-              role: "user",
-              parts: [{ text: messageText }],
-            });
-
-            const currentMessage = chatInput.value; // Store it before clearing
-            chatInput.value = ''; // Clear the input field
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            try {
-                // 3. Send the new message AND the history to your backend
-                const response = await fetch('/api/chat', { // This calls your new backend!
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: currentMessage,
-                        history: chatHistory, // Send the whole history
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await response.json();
-                const botResponse = data.response;
-
-                // 4. Add the bot's response to the chat UI
-                const botResponseDiv = document.createElement('div');
-                botResponseDiv.classList.add('message', 'received');
-                botResponseDiv.textContent = botResponse;
-                chatMessages.appendChild(botResponseDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                // 5. Add the bot's response to our history variable
-                chatHistory.push({
-                  role: "model",
-                  parts: [{ text: botResponse }],
-                });
-
-            } catch (error) {
-                console.error("Error sending message:", error);
-                const errorDiv = document.createElement('div');
-                errorDiv.classList.add('message', 'received');
-                errorDiv.textContent = "Sorry, I'm having trouble connecting. Please try again.";
-                chatMessages.appendChild(errorDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        };
-
-        // These two listeners (click and Enter) stay exactly the same
-        sendMessageButton.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+            document.body.style.overflow = 'auto';
         });
     }
-
-    // --- 4. Auth Page Toggle Logic (for auth.html) ---
-    const showLoginBtn = document.getElementById('show-login');
-    const showSignupBtn = document.getElementById('show-signup');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-
-    if (showLoginBtn && showSignupBtn && loginForm && signupForm) {
-        
-        showLoginBtn.addEventListener('click', () => {
-            // Show login form
-            loginForm.classList.add('active');
-            signupForm.classList.remove('active');
-            
-            // Set login button to active
-            showLoginBtn.classList.add('active');
-            showSignupBtn.classList.remove('active');
-        });
-
-        showSignupBtn.addEventListener('click', () => {
-            // Show signup form
-            loginForm.classList.remove('active');
-            signupForm.classList.add('active');
-
-            // Set signup button to active
-            showLoginBtn.classList.remove('active');
-            showSignupBtn.classList.add('active');
-        });
-
-        // Check URL on page load (e.g., auth.html#signup)
-        const currentHash = window.location.hash;
-        if (currentHash === '#signup') {
-            showSignupBtn.click(); // Automatically click the "Sign Up" tab
-        } else {
-            showLoginBtn.click(); // Default to showing the "Login" tab
-        }
-    }
-
+    
+    // Note: The sendMessage logic for the chatbot is now in its own part of the code
+    // This is just for opening/closing the window
 });
