@@ -1,17 +1,21 @@
-// script.js - Main script for your website
+// script.js - The ONLY script file you need for site-wide logic
 
-// --- 1. Initialize Supabase Client ---
-const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Paste your Project URL here
-const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Paste your anon public Project API Key here
-
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-
-// Wait for the page to load before running scripts
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. Initialize Supabase Client (Moved Inside) ---
+    // This now runs only after the Supabase library is loaded
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    
+    // Check if the supabase object exists before trying to use it
+    if (typeof supabase === 'undefined') {
+        console.error('Supabase library is not loaded!');
+        return; // Stop the script if Supabase isn't loaded
+    }
+    
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // --- 2. Handle User Login State (Lock/Unlock Features) ---
+    // --- 2. Handle User Login State (Lock/Unlock Features on Homepage) ---
     async function handleAuthStateChange() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         
@@ -19,44 +23,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const chatbotBlock = document.getElementById('chatbotBlock');
         const navRightGroup = document.querySelector('.nav-right-group');
 
-        if (session) {
-            // --- USER IS LOGGED IN ---
-            // 1. Unlock feature blocks
+        if (session) { // USER IS LOGGED IN
             if (mentorBlock) mentorBlock.classList.remove('locked');
             if (chatbotBlock) chatbotBlock.classList.remove('locked');
             
-            // 2. Change "Login" button to a "Logout" button in the navbar
             if (navRightGroup) {
                 navRightGroup.innerHTML = '<button id="logout-button" class="nav-button">Logout</button>';
-                
-                const logoutButton = document.getElementById('logout-button');
-                if (logoutButton) {
-                    logoutButton.addEventListener('click', async () => {
-                        await supabaseClient.auth.signOut();
-                        window.location.reload(); // Reload page to lock features
-                    });
-                }
+                document.getElementById('logout-button')?.addEventListener('click', async () => {
+                    await supabaseClient.auth.signOut();
+                    window.location.reload();
+                });
             }
-
-        } else {
-            // --- USER IS LOGGED OUT ---
-            // 1. Add locked class (HTML has it by default, but this ensures it)
+        } else { // USER IS LOGGED OUT
             if (mentorBlock) mentorBlock.classList.add('locked');
             if (chatbotBlock) chatbotBlock.classList.add('locked');
 
-            // 2. Make locked blocks redirect to the login page on click
             const redirectToAuth = () => { window.location.href = '/auth.html'; };
             if (mentorBlock) mentorBlock.addEventListener('click', redirectToAuth);
             if (chatbotBlock) chatbotBlock.addEventListener('click', redirectToAuth);
 
-            // 3. Ensure the "Login" button is shown in the navbar
             if (navRightGroup) {
                 navRightGroup.innerHTML = '<a href="auth.html"><button class="nav-button">Login</button></a>';
             }
         }
     }
-    // Run the auth check when the page loads
-    handleAuthStateChange();
+    // Only run this auth check if we are on the homepage (where mentorBlock exists)
+    if (document.getElementById('mentorBlock')) {
+        handleAuthStateChange();
+    }
 
 
     // --- 3. Navbar Dropdown Logic ---
@@ -74,13 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. Mentor & Chatbot Modal/Window Logic (for logged-in users) ---
+    // --- 4. Mentor & Chatbot Modal Logic (for Homepage) ---
     const mentorBlock = document.getElementById('mentorBlock');
     const fullscreenMentor = document.getElementById('fullscreenMentor');
     const closeMentorButton = document.getElementById('closeMentor');
     if (mentorBlock && fullscreenMentor && closeMentorButton) {
         mentorBlock.addEventListener('click', () => {
-            // Only open if NOT locked
             if (!mentorBlock.classList.contains('locked')) {
                 fullscreenMentor.classList.add('show');
                 document.body.style.overflow = 'hidden';
@@ -91,28 +84,48 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = 'auto';
         });
     }
+    // ... (Your other modal/chatbot logic can go here) ...
 
-    const chatbotBlock = document.getElementById('chatbotBlock');
-    const closeChatButton = document.getElementById('closeChat');
-    if (chatbotBlock && closeChatButton) {
-        chatbotBlock.addEventListener('click', () => {
-            if (!chatbotBlock.classList.contains('locked')) {
-                chatbotBlock.classList.add('expanded');
-                document.body.style.overflow = 'hidden';
+
+    // --- 5. Auth Page Logic (Login/Signup Forms & Tabs) ---
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const formStatus = document.getElementById('form-status');
+    const showLoginBtn = document.getElementById('show-login');
+    const showSignupBtn = document.getElementById('show-signup');
+
+    if (signupForm) {
+        signupForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            formStatus.textContent = 'Creating account...';
+            const email = signupForm.querySelector('#signup-email').value;
+            const password = signupForm.querySelector('#signup-password').value;
+            const { error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) {
+                formStatus.textContent = `Error: ${error.message}`;
+            } else {
+                formStatus.textContent = 'Success! Please check your email for a confirmation link.';
+                signupForm.reset();
             }
         });
-        closeChatButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            chatbotBlock.classList.remove('expanded');
-            document.body.style.overflow = 'auto';
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            formStatus.textContent = 'Logging in...';
+            const email = loginForm.querySelector('#login-email').value;
+            const password = loginForm.querySelector('#login-password').value;
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                formStatus.textContent = `Error: ${error.message}`;
+            } else {
+                window.location.href = '/index.html'; // Redirect on success
+            }
         });
     }
     
-    // --- 5. Auth Page Tab-Switching Logic ---
-    const showLoginBtn = document.getElementById('show-login');
-    const showSignupBtn = document.getElementById('show-signup');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
+    // Tab-switching logic
     if (showLoginBtn && showSignupBtn && loginForm && signupForm) {
         showLoginBtn.addEventListener('click', () => {
             loginForm.classList.add('active');
@@ -126,9 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showLoginBtn.classList.remove('active');
             showSignupBtn.classList.add('active');
         });
-        // Set default tab based on URL or to Login
-        const currentHash = window.location.hash;
-        if (currentHash === '#signup') {
+        if (window.location.hash === '#signup') {
             showSignupBtn.click();
         } else {
             showLoginBtn.click();
