@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth-guard.js"></script>
+    
+    <title>View Post - Soul Link</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header class="navbar">
+         </header>
+
+    <main class="content-area">
+        <div id="post-container">
+            <p>Loading post...</p>
+        </div>
+
+        <hr>
+
+        <h2>Replies</h2>
+        <div id="replies-list">
+            </div>
+
+        <div class="new-reply-container form-container">
+            <h3>Leave a Reply</h3>
+            <form id="new-reply-form">
+                <div class="input-group">
+                    <textarea id="reply-content" placeholder="Write your reply..." rows="4" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Reply</button>
+                <p id="reply-status"></p>
+            </form>
+        </div>
+    </main>
+
+    <script src="post.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
