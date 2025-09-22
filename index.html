@@ -30,7 +30,7 @@
 
 </header>
 
-   <main class="content-area">
+<main class="content-area">
     <div class="content-container">
         
         <div class="content-block mentor-block locked" id="mentorBlock">
@@ -41,6 +41,21 @@
         <div class="content-block chatbot-block locked" id="chatbotBlock">
             <h2>CHAT BOT</h2>
             <div class="lock-overlay">🔒</div>
+
+            <div class="chatbot-window" id="chatbotWindow">
+                <div class="chat-header">
+                    <div class="chat-logo"></div>
+                    <div class="chat-title">Chatbot</div>
+                    <button class="close-chat" id="closeChat">&times;</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message received">Hello! How can I help you today?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type your message...">
+                    <button id="sendMessage"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -52,7 +67,6 @@
             <p>This space can be used for detailed mentor information, resources, or interactive tools.</p>
         </div>
     </div>
-
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
