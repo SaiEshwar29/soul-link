@@ -24,36 +24,20 @@
     </header>
 
     <main class="content auth-page">
-        <div class="auth-container">
-            <div class="auth-toggle">
-                <button class="toggle-btn" id="show-login">Login</button>
-                <button class="toggle-btn" id="show-signup">Sign Up</button>
-            </div>
-
-            <form id="login-form" class="auth-form">
-                <h2>Login</h2>
-                <div class="input-group">
-                    <input type="email" id="login-email" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="login-password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="submit-btn">Login</button>
-            </form>
-
-            <form id="signup-form" class="auth-form">
-                <h2>Sign Up</h2>
-                <div class="input-group">
-                    <input type="email" id="signup-email" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="signup-password" placeholder="Password (at least 6 characters)" required>
-                </div>
-                <button type="submit" class="submit-btn">Sign Up</button>
-            </form>
-            
-            <p id="form-status"></p>
+    <div class="auth-container">
+        <div class="auth-toggle">
+            <button class="toggle-btn" id="show-login">Login</button>
+            <button class="toggle-btn" id="show-signup">Sign Up</button>
         </div>
+
+        <form id="login-form" class="auth-form">
+            </form>
+
+        <form id="signup-form" class="auth-form">
+            </form>
+        
+        <p id="form-status"></p>
+    </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
