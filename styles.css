@@ -387,71 +387,74 @@ body {
     cursor: pointer;
 }
 
-/* --- Auth Page Styles (auth.html) --- */
+/* --- Auth Page Styles --- */
 .auth-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 80px); /* Full height minus navbar */
+    min-height: calc(100vh - 80px);
     padding: 20px;
 }
 
 .auth-container {
     max-width: 500px;
     width: 100%;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
+    background-color: #fff;
+    border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Keeps the tabs inside the rounded border */
+    overflow: hidden;
 }
 
 .auth-toggle {
     display: flex;
     width: 100%;
+    background-color: #f0f0f0;
 }
 
 .toggle-btn {
     width: 50%;
     padding: 15px;
     font-size: 18px;
-    background-color: #eee;
+    background-color: #f0f0f0;
     border: none;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 3px solid transparent;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.toggle-btn:first-child {
-    border-right: 1px solid #ccc;
+    transition: all 0.3s ease;
+    color: #555;
 }
 
 .toggle-btn:hover {
-    background-color: #ddd;
+    background-color: #e9e9e9;
 }
 
 .toggle-btn.active {
-    background-color: #f9f9f9; /* Match form background */
-    border-bottom: none;
+    background-color: #fff;
+    border-bottom: 3px solid #007bff;
     font-weight: bold;
     color: #007bff;
 }
 
 .auth-form {
-    padding: 40px 20px;
-    display: none; /* Hide both forms by default */
+    padding: 40px 30px;
+    display: none; /* Hide forms by default */
 }
 
 .auth-form.active {
-    display: block; /* Show only the active form */
+    display: block; /* Show the active form */
 }
 
 .auth-form h2 {
-    font-size: 24px;
+    text-align: center;
     margin-top: 0;
     margin-bottom: 30px;
-    color: #333;
+}
+
+#form-status {
     text-align: center;
+    margin-top: 20px;
+    padding: 0 30px 20px;
+    font-weight: bold;
 }
 
 /* --- Re-usable Form Element Styles --- */
