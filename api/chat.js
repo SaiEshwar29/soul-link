@@ -4,16 +4,25 @@
  */
 
 export default async function handler(req, res) {
+  // Add these headers to allow requests from your local server
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle pre-flight OPTIONS request for CORS
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   // 1. Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   // 2. Get the user's message and history from the front-end
-  const { message, history } = req.body;
+  const { message, history } = await req.json();
 
   // 3. Get your secret API key from Vercel's "Environment Variables"
-  // process.env.GEMINI_API_KEY is the secure way to access it
   const API_KEY = process.env.GEMINI_API_KEY;
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
@@ -31,7 +40,6 @@ export default async function handler(req, res) {
   5. After providing that crisis response, do not continue the conversation about the topic.`;
 
   // 5. Build the "conversation history" to send to Google
-  // We combine the system prompt, the past chat, and the new message
   const chatHistory = [
     {
       role: "user",
@@ -41,16 +49,15 @@ export default async function handler(req, res) {
       role: "model",
       parts: [{ text: "I understand. I am Aura, a supportive listener. How are you feeling today?" }],
     },
-    // Add all the previous messages from the chat
     ...history,
   ];
 
   const requestBody = {
     contents: [
-      ...chatHistory, // The whole history
+      ...chatHistory,
       {
         role: "user",
-        parts: [{ text: message }], // The new user message
+        parts: [{ text: message }],
       },
     ],
   };
