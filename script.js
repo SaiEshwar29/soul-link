@@ -1,9 +1,10 @@
 // script.js - The ONLY script file you need for site-wide logic
 
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Initialize Supabase Client ---
-    const SUPABASE_URL = 'https://qvocyxwvlazbvpdsppsa.supabase.co'; // PASTE YOUR URL HERE
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2b2N5eHd2bGF6YnZwZHNwcHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDkzNDgsImV4cCI6MjA3Mzc4NTM0OH0.8EoOG5KMG4HYX4j2jrNOQnlJFzHJwfdAYF1D3Rj7dds'; // PASTE YOUR KEY HERE
+    const SUPABASE_URL = 'https://qvocyxwvlazbvpdsppsa.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2b2N5eHd2bGF6YnZwZHNwcHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDkzNDgsImV4cCI6MjA3Mzc4NTM0OH0.8EoOG5KMG4HYX4j2jrNOQnlJFzHJwfdAYF1D3Rj7dds';
     
     if (typeof supabase === 'undefined') {
         console.error('Supabase library is not loaded!');
@@ -13,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { createClient } = supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // --- 2. Handle User Login State (Lock/Unlock Features on Homepage) ---
+    // --- 2. Handle User Login State (Sets the visual state) ---
     async function handleAuthStateChange() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         
@@ -36,20 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mentorBlock) mentorBlock.classList.add('locked');
             if (chatbotBlock) chatbotBlock.classList.add('locked');
 
-            const redirectToAuth = () => { window.location.href = '/auth.html'; };
-            if (mentorBlock) mentorBlock.addEventListener('click', redirectToAuth);
-            if (chatbotBlock) chatbotBlock.addEventListener('click', redirectToAuth);
-
             if (navRightGroup) {
                 navRightGroup.innerHTML = '<a href="auth.html"><button class="nav-button">Login</button></a>';
             }
         }
     }
-    // Only run this auth check if we are on the homepage
-    if (document.getElementById('mentorBlock')) {
-        handleAuthStateChange();
-    }
-
+    handleAuthStateChange();
 
     // --- 3. Navbar Dropdown Logic ---
     const menuToggle = document.getElementById('menu-toggle');
@@ -66,26 +59,73 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. Mentor & Chatbot Modal Logic (for Homepage) ---
-    // (This code stays the same)
+    // --- 4. Mentor & Chatbot Click Logic (No Conflicts) ---
+    
+    // Mentor Block
     const mentorBlock = document.getElementById('mentorBlock');
     const fullscreenMentor = document.getElementById('fullscreenMentor');
     const closeMentorButton = document.getElementById('closeMentor');
-    if (mentorBlock && fullscreenMentor && closeMentorButton) {
+    if (mentorBlock) {
         mentorBlock.addEventListener('click', () => {
-            if (!mentorBlock.classList.contains('locked')) {
-                fullscreenMentor.classList.add('show');
+            if (mentorBlock.classList.contains('locked')) {
+                // If locked, redirect to login
+                window.location.href = '/auth.html';
+            } else {
+                // If unlocked, open the mentor window
+                if (fullscreenMentor) {
+                    fullscreenMentor.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        });
+    }
+    if (closeMentorButton) {
+        closeMentorButton.addEventListener('click', () => {
+            if (fullscreenMentor) {
+                fullscreenMentor.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+
+    // Chatbot Block
+    const chatbotBlock = document.getElementById('chatbotBlock');
+    const closeChatButton = document.getElementById('closeChat');
+    if (chatbotBlock) {
+        chatbotBlock.addEventListener('click', () => {
+            if (chatbotBlock.classList.contains('locked')) {
+                // If locked, redirect to login
+                window.location.href = '/auth.html';
+            } else {
+                // If unlocked, open the chat window
+                chatbotBlock.classList.add('expanded');
                 document.body.style.overflow = 'hidden';
             }
         });
-        closeMentorButton.addEventListener('click', () => {
-            fullscreenMentor.classList.remove('show');
-            document.body.style.overflow = 'auto';
+    }
+    if (closeChatButton) {
+        closeChatButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (chatbotBlock) {
+                chatbotBlock.classList.remove('expanded');
+                document.body.style.overflow = 'auto';
+            }
         });
     }
-    const chatbotBlock = document.getElementById('chatbotBlock');
-    const closeChatButton = document.getElementById('closeChat');
-    if (chatbotBlock && closeChatButton) { /* ... chatbot open/close logic ... */ }
+
+    // --- 5. Chatbot Send Message Logic ---
+    // (This part stays the same)
+    const chatInput = document.getElementById('chatInput');
+    const sendMessageButton = document.getElementById('sendMessage');
+    const chatMessages = document.getElementById('chatMessages');
+    let chatHistory = [];
+    const sendMessage = async () => {
+        // ... (rest of the sendMessage function)
+    };
+    if (sendMessageButton) sendMessageButton.addEventListener('click', sendMessage);
+    if (chatInput) chatInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') sendMessage();
+    });
 
 
     // --- 5. Auth Page Logic (Login/Signup Forms & Tabs) ---
