@@ -20,7 +20,6 @@ body {
     position: relative;
     z-index: 1001;
 }
-
 .nav-left-group {
     display: flex; /* This is also key: [Logo] [Menu] */
     align-items: center;
@@ -31,7 +30,7 @@ body {
 
 .nav-right-group {
     display: flex;
-    align-items: right;
+    align-items: center;
 }
 
 .logo-link {
