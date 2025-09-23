@@ -7,16 +7,36 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { user_id, student_id, counsellor_name, appointment_time } = req.body;
+    // 1. Get the user's token from the request header
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication token is missing.' });
+    }
+
+    // 2. Create a Supabase client that is authenticated AS THE USER
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_KEY, // This should be the anon key
+      { global: { headers: { Authorization: `Bearer ${token}` } } }
+    );
+
+    // 3. Get the user securely on the backend from the token
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return res.status(401).json({ message: 'Invalid token.' });
+    }
+
+    const { student_id, counsellor_name, appointment_time } = req.body;
 
     // --- Part A: Save to Supabase ---
-    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+    // The user_id is now taken from the secure token, not the request body
     const { data: supabaseData, error: supabaseError } = await supabase
       .from('appointments')
-      .insert([{ user_id, student_id, counsellor_name, appointment_time, status: 'booked' }])
+      .insert([{ user_id: user.id, student_id, counsellor_name, appointment_time, status: 'booked' }])
       .select();
 
     if (supabaseError) {
+      // The error from Supabase will be more specific now, e.g., if RLS fails
       throw new Error(`Supabase Error: ${supabaseError.message}`);
     }
 
@@ -28,26 +48,24 @@ export default async function handler(req, res) {
     });
     const sheets = google.sheets({ version: 'v4', auth });
     
-    const spreadsheetId = process.env.SPREADSHEET_ID; // Use environment variable for ID
+    const spreadsheetId = process.env.SPREADSHEET_ID;
     
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: 'Sheet1!A:E',
       valueInputOption: 'USER_ENTERED',
       resource: {
-        values: [
-          [
+        values: [[
             supabaseData[0].id,
             student_id,
             counsellor_name,
             appointment_time,
             'booked'
-          ],
-        ],
+        ]],
       },
     });
 
-    res.status(200).json({ message: 'Appointment booked and saved to sheet!' });
+    res.status(200).json({ message: 'Appointment booked successfully!' });
 
   } catch (error) {
     console.error('Error in booking function:', error);
