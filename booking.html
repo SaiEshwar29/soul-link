@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
-
-    <title>Booking - Soul Link</title>
+    <title>Book a Confidential Session - Soul Link</title>
     <link rel="stylesheet" href="styles.css">
-    </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
 <body>
 
     <header class="navbar">
@@ -19,11 +16,12 @@
             <div class="dropdown-menu" id="dropdown-menu">
                 <a href="index.html">Home</a>
                 <a href="resources.html">Resources</a>
-                <a href="booking.html">Book Session</a> </div>
+                <a href="booking.html">Book Session</a>
+                <a href="forum.html">Forum</a>
+            </div>
         </div>
         <div class="nav-right-group">
-            <a href="auth.html#login"><button class="nav-button">Login</button></a>
-        </div>
+            </div>
     </header>
 
     <main class="content-area">
@@ -50,12 +48,16 @@
             </div>
             
             <button type="submit" class="submit-btn">Book Appointment</button>
-            <p id="form-status"></p> </form>
+            <p id="form-status"></p>
+        </form>
     </main>
 
-    <script src="booking.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script> 
+    
+    <script src="supabaseClient.js"></script>
+    
+    <script src="script.js"></script>
+    <script src="booking.js"></script>
     
 </body>
 </html>
