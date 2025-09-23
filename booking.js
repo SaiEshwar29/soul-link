@@ -1,7 +1,5 @@
 // booking.js
-
 document.addEventListener('DOMContentLoaded', () => {
-    // The variable is now spelled correctly: 'bookingForm'
     const bookingForm = document.getElementById('booking-form');
     const formStatus = document.getElementById('form-status');
 
@@ -11,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
             formStatus.textContent = 'Booking your appointment...';
             formStatus.style.color = 'blue';
 
-            // Get the user's complete session
             const { data: { session } } = await supabaseClient.auth.getSession();
 
             if (!session) {
