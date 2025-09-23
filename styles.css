@@ -31,7 +31,7 @@ body {
 
 .nav-right-group {
     display: flex;
-    align-items: center;
+    align-items: right;
 }
 
 .logo-link {
