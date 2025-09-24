@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 4. Mentor & Chatbot Click Logic (No Conflicts) ---
+    
     // Mentor Block
     const mentorBlock = document.getElementById('mentorBlock');
     if (mentorBlock) {
