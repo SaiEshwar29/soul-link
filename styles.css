@@ -836,3 +836,57 @@ hr {
 .full-width-container {
     width: 100%;
 }
+/* --- New Social Login Styles --- */
+.auth-divider {
+    text-align: center;
+    margin: 20px 30px;
+    position: relative;
+    color: #aaa;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.auth-divider::before {
+    left: 0;
+}
+
+.auth-divider::after {
+    right: 0;
+}
+
+.social-login-container {
+    padding: 0 30px 30px;
+}
+
+.social-login-btn {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.social-login-btn:hover {
+    background-color: #f9f9f9;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
