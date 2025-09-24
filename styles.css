@@ -4,7 +4,6 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f8f8f8;
     overflow-x: hidden; /* Prevent horizontal scroll */
-    padding-top: 80px;
 }
 
 /* --- Navbar Styles --- */
