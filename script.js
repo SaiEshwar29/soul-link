@@ -3,16 +3,11 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Initialize Supabase Client ---
-    const SUPABASE_URL = 'https://qvocyxwvlazbvpdsppsa.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2b2N5eHd2bGF6YnZwZHNwcHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDkzNDgsImV4cCI6MjA3Mzc4NTM0OH0.8EoOG5KMG4HYX4j2jrNOQnlJFzHJwfdAYF1D3Rj7dds';
-    
-    if (typeof supabase === 'undefined') {
-        console.error('Supabase library is not loaded!');
-        return; 
+    // (This uses the 'supabaseClient' variable from supabaseClient.js)
+    if (typeof supabaseClient === 'undefined') {
+        console.error('Supabase client is not initialized. Make sure supabaseClient.js is loaded.');
+        return;
     }
-    
-    const { createClient } = supabase;
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // --- 2. Handle User Login State (Sets the visual state) ---
     async function handleAuthStateChange() {
@@ -60,30 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 4. Mentor & Chatbot Click Logic (No Conflicts) ---
-    
     // Mentor Block
     const mentorBlock = document.getElementById('mentorBlock');
-    const fullscreenMentor = document.getElementById('fullscreenMentor');
-    const closeMentorButton = document.getElementById('closeMentor');
     if (mentorBlock) {
         mentorBlock.addEventListener('click', () => {
             if (mentorBlock.classList.contains('locked')) {
                 // If locked, redirect to login
                 window.location.href = '/auth.html';
             } else {
-                // If unlocked, open the mentor window
-                if (fullscreenMentor) {
-                    fullscreenMentor.classList.add('show');
-                    document.body.style.overflow = 'hidden';
-                }
-            }
-        });
-    }
-    if (closeMentorButton) {
-        closeMentorButton.addEventListener('click', () => {
-            if (fullscreenMentor) {
-                fullscreenMentor.classList.remove('show');
-                document.body.style.overflow = 'auto';
+                // If unlocked, redirect to booking page
+                window.location.href = '/booking.html';
             }
         });
     }
