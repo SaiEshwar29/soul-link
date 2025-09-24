@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   }
 
   // 2. Get the user's message and history from the front-end
-  const { message, history } = await req.json();
+  const { message, history } = req.body;
 
   // 3. Get your secret API key from Vercel's "Environment Variables"
   const API_KEY = process.env.GEMINI_API_KEY;

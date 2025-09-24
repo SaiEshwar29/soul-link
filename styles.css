@@ -569,13 +569,6 @@ body {
 .content-block.locked:hover .lock-overlay {
     opacity: 1;
 }
-.auth-form {
-    display: none; /* Hide both forms by default */
-}
-
-.auth-form.active {
-    display: block; /* Show only the active form */
-}
 /* --- Forum Page Styles --- */
 .new-post-container {
     margin-bottom: 40px;

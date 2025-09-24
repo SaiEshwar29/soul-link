@@ -119,9 +119,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendMessageButton = document.getElementById('sendMessage');
     const chatMessages = document.getElementById('chatMessages');
     let chatHistory = [];
-    const sendMessage = async () => {
-        // ... (rest of the sendMessage function)
-    };
+	    const sendMessage = async () => {
+			if (!chatInput || !chatMessages) return;
+			const text = chatInput.value ? chatInput.value.trim() : '';
+			if (!text) return;
+
+			// Clear input and render user's message
+			chatInput.value = '';
+			const userMsg = document.createElement('div');
+			userMsg.className = 'message sent';
+			userMsg.textContent = text;
+			chatMessages.appendChild(userMsg);
+			chatMessages.scrollTop = chatMessages.scrollHeight;
+
+			// Track conversation history for the backend
+			chatHistory.push({ role: 'user', parts: [{ text }] });
+
+			// Add assistant placeholder
+			const placeholder = document.createElement('div');
+			placeholder.className = 'message received';
+			placeholder.textContent = '...';
+			chatMessages.appendChild(placeholder);
+			chatMessages.scrollTop = chatMessages.scrollHeight;
+
+			try {
+				const res = await fetch('/api/chat', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ message: text, history: chatHistory })
+				});
+
+				if (!res.ok) {
+					throw new Error(`Request failed (${res.status})`);
+				}
+
+				const data = await res.json();
+				const reply = data.response || 'No response';
+				placeholder.textContent = reply;
+				chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+				chatMessages.scrollTop = chatMessages.scrollHeight;
+			} catch (err) {
+				placeholder.textContent = `Error: ${err.message}`;
+			}
+	    };
     if (sendMessageButton) sendMessageButton.addEventListener('click', sendMessage);
     if (chatInput) chatInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') sendMessage();
