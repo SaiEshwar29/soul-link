@@ -146,6 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // In script.js, replace the existing signupForm block
 
+// In script.js, replace the existing signupForm block
+
 if (signupForm) {
     signupForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -161,7 +163,7 @@ if (signupForm) {
             password: password,
             options: {
                 data: {
-                    username: name // This will be saved in the profiles table
+                    username: name
                 }
             }
         });
@@ -170,22 +172,22 @@ if (signupForm) {
             formStatus.textContent = `Error: ${error.message}`;
             formStatus.style.color = 'red';
         } else if (data.session) {
-            // If signup is successful AND returns a session (meaning email confirmation is OFF),
-            // the user is already logged in. Redirect them to the homepage.
-            formStatus.textContent = 'Success! Logging you in...';
+            // If signup is successful and auto-login happens...
+            formStatus.textContent = 'Success! Let\'s do a quick check-in...';
             formStatus.style.color = 'green';
-            // Use a small delay to allow the user to see the success message
             setTimeout(() => {
-                window.location.href = '/index.html';
+                // REDIRECT TO THE NEW CHECK-IN PAGE
+                window.location.href = '/checkin.html';
             }, 1000);
         } else {
-            // If signup is successful but there's no session, email confirmation is required.
+            // If email confirmation is required.
             formStatus.textContent = 'Success! Please check your email for a confirmation link.';
             formStatus.style.color = 'green';
             signupForm.reset();
         }
     });
 }
+
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
