@@ -180,6 +180,7 @@ if (signupForm) {
     signupForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         formStatus.textContent = 'Creating account...';
+        formStatus.style.color = 'blue';
 
         const name = signupForm.querySelector('#signup-name')?.value;
         const email = signupForm.querySelector('#signup-email').value;
@@ -192,25 +193,17 @@ if (signupForm) {
         });
 
         if (error) {
-            const msg = (error.message || '').toLowerCase();
-            // If the account already exists and is confirmed, direct the user to Login
-            if (msg.includes('already registered')) {
-                formStatus.textContent = 'Account already exists. Redirecting to login...';
-                formStatus.style.color = 'blue';
-                setTimeout(() => {
-                    window.location.href = '/auth.html#login';
-                }, 1200);
-                return;
-            }
+            // This handles the error for users who are ALREADY confirmed and registered.
             formStatus.textContent = `Error: ${error.message}`;
             formStatus.style.color = 'red';
-        } else if (data?.user) {
-            const createdAt = new Date(data.user.created_at);
-            const updatedAt = new Date(data.user.updated_at);
-            if (updatedAt.getTime() - createdAt.getTime() > 10000) {
-                formStatus.textContent = 'This email is already registered but not yet confirmed. We have resent the confirmation link to your inbox.';
-                formStatus.style.color = 'blue';
+        } else if (data.user) {
+            // This checks if the user is brand new or just needs to confirm their email again.
+            if (data.user.identities && data.user.identities.length === 0) {
+                // This is an existing user who has not confirmed their email yet.
+                formStatus.textContent = 'This email is already registered but not confirmed. We have resent the confirmation link.';
+                formStatus.style.color = 'blue'; // Use a neutral/informative color
             } else {
+                // This is a brand new user.
                 formStatus.textContent = 'Success! Please check your email for a confirmation link.';
                 formStatus.style.color = 'green';
             }
@@ -231,7 +224,7 @@ if (signupForm) {
                 formStatus.textContent = `Error: ${error.message}`;
                 formStatus.style.color = 'red';
             } else {
-                window.location.href = '/index.html'; // Redirect on success
+                window.location.href = 'checkin.html'; // Redirect on success
             }
         });
     }
