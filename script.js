@@ -3,10 +3,16 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Initialize Supabase Client ---
-    // (This uses the 'supabaseClient' variable from supabaseClient.js)
+    // Prefer shared client from supabaseClient.js; otherwise create a local one (placeholders)
     if (typeof supabaseClient === 'undefined') {
-        console.error('Supabase client is not initialized. Make sure supabaseClient.js is loaded.');
-        return;
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        if (typeof supabase === 'undefined') {
+            console.error('Supabase library is not loaded!');
+            return;
+        }
+        const { createClient } = supabase;
+        window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
     }
     // In script.js
         
@@ -174,37 +180,30 @@ if (signupForm) {
     signupForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         formStatus.textContent = 'Creating account...';
-        
-        const name = signupForm.querySelector('#signup-name').value;
+
+        const name = signupForm.querySelector('#signup-name')?.value;
         const email = signupForm.querySelector('#signup-email').value;
         const password = signupForm.querySelector('#signup-password').value;
 
-        // Sign up the user, passing the name as metadata
         const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: {
-                    username: name
-                }
-            }
+            email,
+            password,
+            options: { data: { username: name } }
         });
 
         if (error) {
             formStatus.textContent = `Error: ${error.message}`;
             formStatus.style.color = 'red';
-        } else if (data.session) {
-            // If signup is successful and auto-login happens...
-            formStatus.textContent = 'Success! Let\'s do a quick check-in...';
-            formStatus.style.color = 'green';
-            setTimeout(() => {
-                // REDIRECT TO THE NEW CHECK-IN PAGE
-                window.location.href = '/checkin.html';
-            }, 1000);
-        } else {
-            // If email confirmation is required.
-            formStatus.textContent = 'Success! Please check your email for a confirmation link.';
-            formStatus.style.color = 'green';
+        } else if (data?.user) {
+            const createdAt = new Date(data.user.created_at);
+            const updatedAt = new Date(data.user.updated_at);
+            if (updatedAt.getTime() - createdAt.getTime() > 10000) {
+                formStatus.textContent = 'This email is already registered but not yet confirmed. We have resent the confirmation link to your inbox.';
+                formStatus.style.color = 'blue';
+            } else {
+                formStatus.textContent = 'Success! Please check your email for a confirmation link.';
+                formStatus.style.color = 'green';
+            }
             signupForm.reset();
         }
     });
