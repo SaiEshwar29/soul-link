@@ -643,3 +643,29 @@ hr {
 .new-reply-container {
     margin-top: 40px;
 }
+/* --- Filter Button Styles --- */
+.filter-container {
+    margin-bottom: 30px;
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.filter-btn.active {
+    background-color: black;
+    color: white;
+    border-color: black;
+}
