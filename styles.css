@@ -757,3 +757,8 @@ hr {
         display: none;
     }
 }
+/* Add this new rule to styles.css */
+.page-header {
+    text-align: center;
+    margin-bottom: 40px; /* Adds some space below the text */
+}
