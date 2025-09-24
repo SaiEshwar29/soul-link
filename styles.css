@@ -616,6 +616,11 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* For the hover animation */
     max-width: 700px; /* This sets a maximum width */
     margin: 0 auto 20px auto;
+    display: flex;
+    flex-direction: column;
+}
+.post-item p {
+    flex-grow: 1; /* This makes the paragraph grow to fill empty space */
 }
 
 /* Add this new rule for the hover effect */
