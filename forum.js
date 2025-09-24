@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 postElement.innerHTML = `
                     <h3>${post.title}</h3>
                     <p>${post.content.substring(0, 150)}...</p>
-                    <span>Posted on: ${new Date(post.created_at).toLocaleDateDateString()}</span>
+                    <span>Posted on: ${new Date(post.created_at).toLocaleDateString()}</span>
                 `;
                 postsList.appendChild(postElement);
             }
