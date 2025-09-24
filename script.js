@@ -192,6 +192,16 @@ if (signupForm) {
         });
 
         if (error) {
+            const msg = (error.message || '').toLowerCase();
+            // If the account already exists and is confirmed, direct the user to Login
+            if (msg.includes('already registered')) {
+                formStatus.textContent = 'Account already exists. Redirecting to login...';
+                formStatus.style.color = 'blue';
+                setTimeout(() => {
+                    window.location.href = '/auth.html#login';
+                }, 1200);
+                return;
+            }
             formStatus.textContent = `Error: ${error.message}`;
             formStatus.style.color = 'red';
         } else if (data?.user) {
