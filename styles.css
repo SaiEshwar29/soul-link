@@ -569,9 +569,20 @@ body {
 .content-block.locked:hover .lock-overlay {
     opacity: 1;
 }
-/* --- Forum Page Styles --- */
+/* Update this existing class */
 .new-post-container {
-    margin-bottom: 40px;
+    max-width: 700px; /* Constrain the width */
+    margin: 0 auto 40px auto; /* Center the container and add space below it */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* For the hover animation */
+}
+
+/* Add this new rule for the hover effect */
+.new-post-container:hover {
+    transform: translateY(-5px); /* Lift the card up slightly */
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1); /* Add a deeper shadow */
 }
 
 #post-content {
