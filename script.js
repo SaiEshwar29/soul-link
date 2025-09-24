@@ -39,20 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     handleAuthStateChange();
 
-    // --- 3. Navbar Dropdown Logic ---
-    const menuToggle = document.getElementById('menu-toggle');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    if (menuToggle && dropdownMenu) {
-        menuToggle.addEventListener('click', (event) => {
-            dropdownMenu.classList.toggle('show');
-            event.stopPropagation();
-        });
-        document.addEventListener('click', (event) => {
-            if (dropdownMenu.classList.contains('show') && !menuToggle.contains(event.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
-    }
+    
 
     // --- 4. Mentor & Chatbot Click Logic (No Conflicts) ---
     
