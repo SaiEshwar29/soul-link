@@ -4,6 +4,7 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f8f8f8;
     overflow-x: hidden; /* Prevent horizontal scroll */
+    padding-top: 80px;
 }
 
 /* --- Navbar Styles --- */
@@ -687,6 +688,10 @@ hr {
     padding: 15px 30px;
     background-color: #38c1a5;
     color: white;
+    position: sticky; /* This makes the navbar stick */
+    top: 0;           /* Stick it to the top of the viewport */
+    left: 0;          /* Stretch it across the full width */
+    z-index: 1000;    /* Ensure it stays on top of other content */
 }
 
 .logo-text {
