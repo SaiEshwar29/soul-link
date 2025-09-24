@@ -157,23 +157,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const showLoginBtn = document.getElementById('show-login');
     const showSignupBtn = document.getElementById('show-signup');
 
-    if (signupForm) {
-        signupForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            formStatus.textContent = 'Creating account...';
-            const email = signupForm.querySelector('#signup-email').value;
-            const password = signupForm.querySelector('#signup-password').value;
-            const { error } = await supabaseClient.auth.signUp({ email, password });
-            if (error) {
-                formStatus.textContent = `Error: ${error.message}`;
-                formStatus.style.color = 'red';
-            } else {
-                formStatus.textContent = 'Success! Please check your email for a confirmation link.';
-                formStatus.style.color = 'green';
-                signupForm.reset();
+    // In script.js, replace the existing signupForm block
+
+if (signupForm) {
+    signupForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        formStatus.textContent = 'Creating account...';
+        
+        const name = signupForm.querySelector('#signup-name').value;
+        const email = signupForm.querySelector('#signup-email').value;
+        const password = signupForm.querySelector('#signup-password').value;
+
+        // Sign up the user, passing the name as metadata
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    username: name // This will be saved in the profiles table
+                }
             }
         });
-    }
+
+        if (error) {
+            formStatus.textContent = `Error: ${error.message}`;
+            formStatus.style.color = 'red';
+        } else if (data.session) {
+            // If signup is successful AND returns a session (meaning email confirmation is OFF),
+            // the user is already logged in. Redirect them to the homepage.
+            formStatus.textContent = 'Success! Logging you in...';
+            formStatus.style.color = 'green';
+            // Use a small delay to allow the user to see the success message
+            setTimeout(() => {
+                window.location.href = '/index.html';
+            }, 1000);
+        } else {
+            // If signup is successful but there's no session, email confirmation is required.
+            formStatus.textContent = 'Success! Please check your email for a confirmation link.';
+            formStatus.style.color = 'green';
+            signupForm.reset();
+        }
+    });
+}
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
