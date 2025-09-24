@@ -47,6 +47,29 @@
         <div id="posts-list">
             <p>Loading posts...</p>
         </div>
+        <div id="post-modal" class="modal-overlay">
+            <div class="modal-content">
+                <button id="close-modal" class="close-button">&times;</button>
+                
+                <div id="modal-post-content"></div>
+        
+                <hr>
+        
+                <h2>Replies</h2>
+                <div id="modal-replies-list"></div>
+        
+                <div class="new-reply-container form-container">
+                    <h3>Leave a Reply</h3>
+                    <form id="modal-reply-form">
+                        <div class="input-group">
+                            <textarea id="modal-reply-content" placeholder="Write your reply..." rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Submit Reply</button>
+                        <p id="modal-reply-status"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="forum.js"></script>
