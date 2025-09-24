@@ -8,6 +8,28 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Supabase client is not initialized. Make sure supabaseClient.js is loaded.');
         return;
     }
+    // In script.js
+        
+        // --- 7. Google Login Logic (for auth.html) ---
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', async () => {
+                // This one function handles the entire Google login process
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin + '/checkin.html'
+                    }
+                });
+        
+                if (error) {
+                    const formStatus = document.getElementById('form-status');
+                    formStatus.textContent = `Error: ${error.message}`;
+                    formStatus.style.color = 'red';
+                }
+            });
+        }
 
     // --- 2. Handle User Login State (Sets the visual state) ---
     async function handleAuthStateChange() {
