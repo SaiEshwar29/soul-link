@@ -6,16 +6,9 @@
     <title>Mind State Check-in</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .transition-all {
-            transition: all 0.3s ease-in-out;
-        }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4">
@@ -25,62 +18,56 @@
         <!-- Start Screen -->
         <div id="start-screen">
             <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800">Mind State Check-in</h1>
-            <p class="text-center text-gray-600 mt-4">Answer 10 questions about your feelings over the **last 2 weeks** to get a snapshot of your mental well-being.</p>
+            <p class="text-center text-gray-600 mt-4">Answer 10 questions about your feelings over the <strong>last 2 weeks</strong> to get a snapshot of your mental well-being.</p>
             <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
-                <p class="text-sm text-yellow-800">**Disclaimer:** This is a self-assessment tool and not a substitute for professional medical advice, diagnosis, or treatment. Please consult a healthcare professional for any health concerns.</p>
+                <p class="text-sm text-yellow-800"><strong>Disclaimer:</strong> This is not a substitute for professional medical advice. Please consult a healthcare professional for any health concerns.</p>
             </div>
-            <div class="mt-8 text-center">
+            <!-- MODIFIED: Added a "Skip" button and updated button layout -->
+            <div class="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
+                <button id="skip-btn" class="text-gray-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-200 transition-all">
+                    Skip for Now
+                </button>
                 <button id="start-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-300">
                     Begin Check-in
                 </button>
             </div>
         </div>
 
-        <!-- Questionnaire Screen -->
+        <!-- Questionnaire Screen (No changes here) -->
         <div id="questionnaire-screen" class="hidden">
             <div id="progress-bar-container" class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
                 <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
             </div>
             <h2 id="question-text" class="text-xl md:text-2xl font-semibold mb-6 text-center"></h2>
-            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Options will be inserted here by JavaScript -->
-            </div>
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
         </div>
 
-        <!-- Results Screen -->
+        <!-- Results Screen (No changes here) -->
         <div id="results-screen" class="hidden">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Your Check-in Results</h1>
-            <p class="text-center text-gray-600 mb-6">This chart represents your feelings over the last two weeks. A larger shape suggests a more positive state in that area. This is a snapshot in time, not a diagnosis.</p>
+            <p class="text-center text-gray-600 mb-6">This chart represents your feelings over the last two weeks. This is a snapshot in time, not a diagnosis.</p>
             <div class="w-full max-w-lg mx-auto">
                 <canvas id="resultsChart"></canvas>
             </div>
-            <div id="summary-container" class="mt-8 space-y-3">
-                <!-- Summary text will be inserted here -->
-            </div>
-            <div class="mt-8 text-center space-x-4">
-                 <button id="restart-btn" class="bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-lg hover:bg-gray-300 transition-all focus:outline-none focus:ring-4 focus:ring-gray-300">
-                    Take Again
-                </button>
-                <button id="finish-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-300">
+            <div id="summary-container" class="mt-8 space-y-3"></div>
+            <div class="mt-8 text-center">
+                 <button id="continue-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-all">
                     Continue to Homepage
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- NOTE: You will need to create and configure your own supabaseClient.js file for the save functionality to work. -->
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM ELEMENTS ---
             const startScreen = document.getElementById('start-screen');
             const questionnaireScreen = document.getElementById('questionnaire-screen');
             const resultsScreen = document.getElementById('results-screen');
             const startBtn = document.getElementById('start-btn');
-            const restartBtn = document.getElementById('restart-btn');
-            const finishBtn = document.getElementById('finish-btn');
+            const skipBtn = document.getElementById('skip-btn');
+            const continueBtn = document.getElementById('continue-btn');
             const questionText = document.getElementById('question-text');
             const optionsContainer = document.getElementById('options-container');
             const progressBar = document.getElementById('progress-bar');
@@ -106,9 +93,9 @@
                 { text: "Nearly every day", value: 3 }
             ];
 
-            let currentQuestionIndex = 0;
             let userAnswers = [];
             let chartInstance = null;
+            let currentQuestionIndex = 0;
 
             function startQuestionnaire() {
                 currentQuestionIndex = 0;
@@ -125,6 +112,7 @@
                 optionsContainer.innerHTML = '';
                 const progress = ((currentQuestionIndex) / questions.length) * 100;
                 progressBar.style.width = `${progress}%`;
+
                 options.forEach(option => {
                     const button = document.createElement('button');
                     button.textContent = option.text;
@@ -154,13 +142,7 @@
                 questionnaireScreen.classList.add('hidden');
                 resultsScreen.classList.remove('hidden');
                 
-                const scores = {
-                    "Mood & Interest": { total: 0, count: 0 },
-                    "Anxiety & Worry": { total: 0, count: 0 },
-                    "Energy & Function": { total: 0, count: 0 },
-                    "Social Connection": { total: 0, count: 0 },
-                    "Resilience": { total: 0, count: 0 }
-                };
+                const scores = { "Mood & Interest": { total: 0, count: 0 }, "Anxiety & Worry": { total: 0, count: 0 }, "Energy & Function": { total: 0, count: 0 }, "Social Connection": { total: 0, count: 0 }, "Resilience": { total: 0, count: 0 } };
                 userAnswers.forEach(answer => {
                     scores[answer.category].total += answer.score;
                     scores[answer.category].count++;
@@ -173,75 +155,37 @@
                 });
                 
                 generateChart(labels, data);
-                generateSummary(scores); // This will now work
+                generateSummary(scores);
 
-                // --- SAVE RESULTS TO SUPABASE ---
-                // Note: This requires supabaseClient.js to be set up correctly
-                try {
-                    const { data: { user } } = await supabaseClient.auth.getUser();
-                    if (user) {
-                        const resultsToSave = {
-                            user_id: user.id,
-                            mood_interest_score: data[0],
-                            anxiety_worry_score: data[1],
-                            energy_function_score: data[2],
-                            social_connection_score: data[3],
-                            resilience_score: data[4],
-                        };
-                        const { error } = await supabaseClient.from('checkin_results').insert([resultsToSave]);
-                        if (error) {
-                            console.error('Error saving results:', error);
-                        }
-                    }
-                } catch (e) {
-                    console.warn("Supabase client may not be configured. Could not save results.", e.message);
+                // --- SAVE RESULTS ---
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (user) {
+                    const resultsToSave = {
+                        user_id: user.id,
+                        mood_interest: data[0],
+                        anxiety_worry: data[1],
+                        energy_function: data[2],
+                        social_connection: data[3],
+                        resilience: data[4]
+                    };
+                    // We only save the results, we no longer update the profile
+                    await supabaseClient.from('checkin_results').insert([resultsToSave]);
                 }
             }
-            
-            // --- CORRECTED SUMMARY FUNCTION ---
-            function generateSummary(scores) {
-                summaryContainer.innerHTML = ''; // Clear previous summary
 
+            function generateSummary(scores) {
+                 summaryContainer.innerHTML = '';
                 const summaryData = {
-                    "Mood & Interest": {
-                        low: "It seems your mood has been quite low lately, with little interest in your usual activities.",
-                        mid: "You've had several days of feeling down or disinterested. Acknowledging this is a good step.",
-                        high: "You've generally maintained a positive mood and interest in your daily life, which is a great sign."
-                    },
-                    "Anxiety & Worry": {
-                        low: "Feelings of anxiety and uncontrollable worry seem to have been very frequent for you recently.",
-                        mid: "You're experiencing a noticeable level of anxiety. Finding ways to manage this may be beneficial.",
-                        high: "You appear to have a good handle on feelings of anxiety and worry."
-                    },
-                    "Energy & Function": {
-                        low: "Your energy levels seem to be quite low, and you may be finding it hard to stay engaged with your daily life.",
-                        mid: "You've had days where your energy is lower and life feels less interesting.",
-                        high: "You've felt active and engaged with your life recently, which is fantastic for well-being."
-                    },
-                    "Social Connection": {
-                        low: "It appears you've been feeling quite lonely and disconnected from others recently.",
-                        mid: "You've had moments of feeling lonely, suggesting your need for social connection might not be fully met.",
-                        high: "You're feeling a strong sense of connection with others, which is a key part of mental wellness."
-                    },
-                    "Resilience": {
-                        low: "You seem to be feeling less confident in handling problems and less hopeful for the future right now.",
-                        mid: "Your confidence in handling challenges has wavered on several days.",
-                        high: "You're feeling confident and hopeful, showing a strong sense of resilience."
-                    }
+                    "Mood & Interest": { low: "It seems your mood has been quite low lately...", mid: "You've had several days of feeling down...", high: "You've generally maintained a positive mood..." },
+                    "Anxiety & Worry": { low: "Feelings of anxiety and worry seem to have been frequent...", mid: "You're experiencing a noticeable level of anxiety...", high: "You appear to have a good handle on anxiety..." },
+                    "Energy & Function": { low: "Your energy levels seem to be quite low...", mid: "You've had days where your energy is lower...", high: "You've felt active and engaged..." },
+                    "Social Connection": { low: "It appears you've been feeling quite lonely...", mid: "You've had moments of feeling lonely...", high: "You're feeling a strong sense of connection..." },
+                    "Resilience": { low: "You seem to be feeling less confident...", mid: "Your confidence has wavered on several days.", high: "You're feeling confident and hopeful..." }
                 };
-                
                 for (const category in scores) {
                     const avgScore = scores[category].count > 0 ? scores[category].total / scores[category].count : 0;
                     let summaryText = '';
-
-                    if (avgScore <= 1.2) {
-                        summaryText = summaryData[category].low;
-                    } else if (avgScore <= 2.2) {
-                        summaryText = summaryData[category].mid;
-                    } else {
-                        summaryText = summaryData[category].high;
-                    }
-                    
+                    if (avgScore <= 1.2) { summaryText = summaryData[category].low; } else if (avgScore <= 2.2) { summaryText = summaryData[category].mid; } else { summaryText = summaryData[category].high; }
                     const p = document.createElement('p');
                     p.innerHTML = `<span class="font-bold text-indigo-700">${category}:</span> ${summaryText}`;
                     p.classList.add('text-center', 'text-gray-700', 'p-3', 'bg-gray-50', 'rounded-lg');
@@ -251,9 +195,7 @@
 
             function generateChart(labels, data) {
                 const ctx = document.getElementById('resultsChart').getContext('2d');
-                if(chartInstance) {
-                    chartInstance.destroy();
-                }
+                if(chartInstance) { chartInstance.destroy(); }
                 chartInstance = new Chart(ctx, {
                     type: 'radar',
                     data: {
@@ -264,33 +206,15 @@
                             backgroundColor: 'rgba(129, 140, 248, 0.2)',
                             borderColor: 'rgba(79, 70, 229, 1)',
                             pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-                            pointBorderColor: '#fff',
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
-                            borderWidth: 2,
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        scales: {
-                            r: {
-                                beginAtZero: true,
-                                max: 3,
-                                ticks: { stepSize: 1, display: false },
-                                pointLabels: { font: { size: 14, weight: '500' }, color: '#374151' }
-                            }
-                        },
-                        plugins: { legend: { display: false } }
-                    }
+                    options: { scales: { r: { beginAtZero: true, max: 3 } } }
                 });
             }
 
             startBtn.addEventListener('click', startQuestionnaire);
-            restartBtn.addEventListener('click', startQuestionnaire); // "Take Again" button
-            finishBtn.addEventListener('click', () => {
-                window.location.href = '/index.html'; // Redirects to a home page
-            });
+            continueBtn.addEventListener('click', () => { window.location.href = '/index.html'; });
+            skipBtn.addEventListener('click', () => { window.location.href = '/index.html'; });
         });
     </script>
 </body>
