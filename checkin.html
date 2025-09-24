@@ -57,7 +57,10 @@
             <div id="summary-container" class="mt-8 space-y-3">
                 <!-- Summary text will be inserted here -->
             </div>
-            <div class="mt-8 text-center">
+            <div class="mt-8 text-center space-x-4">
+                 <button id="restart-btn" class="bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-lg hover:bg-gray-300 transition-all focus:outline-none focus:ring-4 focus:ring-gray-300">
+                    Take Again
+                </button>
                 <button id="finish-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-indigo-700 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-300">
                     Continue to Homepage
                 </button>
@@ -65,7 +68,7 @@
         </div>
     </div>
 
-    <!-- Load Supabase and the client file -->
+    <!-- NOTE: You will need to create and configure your own supabaseClient.js file for the save functionality to work. -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
 
@@ -76,6 +79,7 @@
             const questionnaireScreen = document.getElementById('questionnaire-screen');
             const resultsScreen = document.getElementById('results-screen');
             const startBtn = document.getElementById('start-btn');
+            const restartBtn = document.getElementById('restart-btn');
             const finishBtn = document.getElementById('finish-btn');
             const questionText = document.getElementById('question-text');
             const optionsContainer = document.getElementById('options-container');
@@ -169,28 +173,80 @@
                 });
                 
                 generateChart(labels, data);
-                generateSummary(scores);
+                generateSummary(scores); // This will now work
 
                 // --- SAVE RESULTS TO SUPABASE ---
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                if (user) {
-                    const resultsToSave = {
-                        user_id: user.id,
-                        mood_interest_score: data[0],
-                        anxiety_worry_score: data[1],
-                        energy_function_score: data[2],
-                        social_connection_score: data[3],
-                        resilience_score: data[4],
-                    };
-                    const { error } = await supabaseClient.from('checkin_results').insert([resultsToSave]);
-                    if (error) {
-                        console.error('Error saving results:', error);
+                // Note: This requires supabaseClient.js to be set up correctly
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    if (user) {
+                        const resultsToSave = {
+                            user_id: user.id,
+                            mood_interest_score: data[0],
+                            anxiety_worry_score: data[1],
+                            energy_function_score: data[2],
+                            social_connection_score: data[3],
+                            resilience_score: data[4],
+                        };
+                        const { error } = await supabaseClient.from('checkin_results').insert([resultsToSave]);
+                        if (error) {
+                            console.error('Error saving results:', error);
+                        }
                     }
+                } catch (e) {
+                    console.warn("Supabase client may not be configured. Could not save results.", e.message);
                 }
             }
             
+            // --- CORRECTED SUMMARY FUNCTION ---
             function generateSummary(scores) {
-                // (Your summary generation logic here)
+                summaryContainer.innerHTML = ''; // Clear previous summary
+
+                const summaryData = {
+                    "Mood & Interest": {
+                        low: "It seems your mood has been quite low lately, with little interest in your usual activities.",
+                        mid: "You've had several days of feeling down or disinterested. Acknowledging this is a good step.",
+                        high: "You've generally maintained a positive mood and interest in your daily life, which is a great sign."
+                    },
+                    "Anxiety & Worry": {
+                        low: "Feelings of anxiety and uncontrollable worry seem to have been very frequent for you recently.",
+                        mid: "You're experiencing a noticeable level of anxiety. Finding ways to manage this may be beneficial.",
+                        high: "You appear to have a good handle on feelings of anxiety and worry."
+                    },
+                    "Energy & Function": {
+                        low: "Your energy levels seem to be quite low, and you may be finding it hard to stay engaged with your daily life.",
+                        mid: "You've had days where your energy is lower and life feels less interesting.",
+                        high: "You've felt active and engaged with your life recently, which is fantastic for well-being."
+                    },
+                    "Social Connection": {
+                        low: "It appears you've been feeling quite lonely and disconnected from others recently.",
+                        mid: "You've had moments of feeling lonely, suggesting your need for social connection might not be fully met.",
+                        high: "You're feeling a strong sense of connection with others, which is a key part of mental wellness."
+                    },
+                    "Resilience": {
+                        low: "You seem to be feeling less confident in handling problems and less hopeful for the future right now.",
+                        mid: "Your confidence in handling challenges has wavered on several days.",
+                        high: "You're feeling confident and hopeful, showing a strong sense of resilience."
+                    }
+                };
+                
+                for (const category in scores) {
+                    const avgScore = scores[category].count > 0 ? scores[category].total / scores[category].count : 0;
+                    let summaryText = '';
+
+                    if (avgScore <= 1.2) {
+                        summaryText = summaryData[category].low;
+                    } else if (avgScore <= 2.2) {
+                        summaryText = summaryData[category].mid;
+                    } else {
+                        summaryText = summaryData[category].high;
+                    }
+                    
+                    const p = document.createElement('p');
+                    p.innerHTML = `<span class="font-bold text-indigo-700">${category}:</span> ${summaryText}`;
+                    p.classList.add('text-center', 'text-gray-700', 'p-3', 'bg-gray-50', 'rounded-lg');
+                    summaryContainer.appendChild(p);
+                }
             }
 
             function generateChart(labels, data) {
@@ -207,25 +263,36 @@
                             data: data,
                             backgroundColor: 'rgba(129, 140, 248, 0.2)',
                             borderColor: 'rgba(79, 70, 229, 1)',
+                            pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
                             borderWidth: 2,
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
                         scales: {
                             r: {
                                 beginAtZero: true,
                                 max: 3,
+                                ticks: { stepSize: 1, display: false },
+                                pointLabels: { font: { size: 14, weight: '500' }, color: '#374151' }
                             }
-                        }
+                        },
+                        plugins: { legend: { display: false } }
                     }
                 });
             }
 
             startBtn.addEventListener('click', startQuestionnaire);
+            restartBtn.addEventListener('click', startQuestionnaire); // "Take Again" button
             finishBtn.addEventListener('click', () => {
-                window.location.href = '/index.html'; // Redirect to home page
+                window.location.href = '/index.html'; // Redirects to a home page
             });
         });
     </script>
 </body>
 </html>
+
