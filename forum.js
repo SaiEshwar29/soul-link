@@ -137,11 +137,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle new post form submission (this stays the same)
+    // Handle new post form submission
     if (newPostForm) {
         newPostForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            // ... (Your existing new post submission logic) ...
+            postStatus.textContent = 'Submitting...';
+
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    postStatus.textContent = 'You must be logged in to post.';
+                    return;
+                }
+
+                const title = document.getElementById('post-title').value.trim();
+                const content = document.getElementById('post-content').value.trim();
+                if (!title || !content) {
+                    postStatus.textContent = 'Title and content are required.';
+                    return;
+                }
+
+                const { error } = await supabaseClient
+                    .from('posts')
+                    .insert([{ title, content, user_id: user.id }]);
+
+                if (error) {
+                    postStatus.textContent = `Error: ${error.message}`;
+                } else {
+                    postStatus.textContent = 'Post created successfully!';
+                    newPostForm.reset();
+                    fetchPosts();
+                }
+            } catch (e) {
+                postStatus.textContent = `Error: ${e.message}`;
+            }
         });
     }
 
