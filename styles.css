@@ -577,6 +577,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* For the hover animation */
+    padding: 20px;
 }
 
 /* Add this new rule for the hover effect */
@@ -614,8 +615,7 @@ body {
     color: inherit; /* Makes text color normal */
     display: block; /* Important for the 'a' tag to behave like a div */
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* For the hover animation */
-    max-width: 700px; /* This sets a maximum width */
-    margin: 0 auto 20px auto;
+    margin: 0; /* Let grid control the placement */
     display: flex;
     flex-direction: column;
 }
