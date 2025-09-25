@@ -56,13 +56,29 @@
         </div>
         
         <div class="content-block chatbot-block locked" id="chatbotBlock">
-    <div class="block-content-wrapper">
-        <i class="fas fa-comments icon-large"></i>
-        <h2>AI Companion</h2>
-        <p>Chat with Aastha for support anytime.</p>
-    </div>
-    <div class="lock-overlay">🔒</div>
-</div>
+            <h2>CHAT BOT</h2>
+            <div class="lock-overlay">🔒</div>
+
+            <div class="chatbot-window" id="chatbotWindow">
+                <div class="chat-header">
+                    <div class="chat-logo"></div>
+                    <div class="chat-title">Chatbot</div>
+                    <button class="close-chat" id="closeChat">&times;</button>
+                </div>
+               <div id="aastha-chat-container">
+                        <iframe
+                          id="aastha-chat-iframe"
+                          src="https://ai.studio/apps/drive/1YFM7hPE23joM6Y6wwK5afO8mzhs33jAv"
+                          title="Aastha - Your AI Companion"
+                        ></iframe>
+                    </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type your message...">
+                    <button id="sendMessage"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div class="fullscreen-mentor" id="fullscreenMentor">
         <button class="close-fullscreen" id="closeMentor">&times;</button>

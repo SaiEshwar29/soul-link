@@ -1,3 +1,4 @@
+
 /* --- Global Styles --- */
 body {
     margin: 0;
@@ -938,4 +939,95 @@ hr {
     width: 100%;
     height: 100%;
     border: none;
+}
+/* --- General Form & Page Styles --- */
+
+/* Constrains and centers the main content area on the page */
+.content-area {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Styles for page titles like "Book a Confidential Session" */
+.page-header h1 {
+    font-size: 2.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.page-header p {
+    font-size: 1.1em;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+/* Creates a clean card for the form */
+.form-container {
+    max-width: 650px;
+    margin: 0 auto; /* Centers the form card */
+    padding: 30px 40px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Styles for the labels above each input field */
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9em;
+}
+
+/* Unified style for all text inputs, date pickers, and dropdowns */
+.input-group input[type="text"],
+.input-group input[type="datetime-local"],
+.input-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #f9f9f9;
+}
+
+/* Highlight effect when a user clicks into a form field */
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: #38c1a5; /* Your navbar color */
+    box-shadow: 0 0 0 3px rgba(56, 193, 165, 0.25);
+    background-color: #fff;
+}
+
+/* Styling for the status message (e.g., "Booking your appointment...") */
+#form-status {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* Make sure the main submit button is consistent with others */
+.submit-btn {
+    background-color: #2c3e50; /* Dark, professional color */
+    border: none;
+    color: white;
+    padding: 15px;
+    font-size: 1.1em;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #34495e;
+    transform: translateY(-2px);
 }
