@@ -85,86 +85,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Chatbot Block
-    const chatbotBlock = document.getElementById('chatbotBlock');
-    const closeChatButton = document.getElementById('closeChat');
+   const chatBubble = document.getElementById('aastha-chat-bubble');
+    const chatContainer = document.getElementById('aastha-chat-container');
+    const chatbotBlock = document.getElementById('chatbotBlock'); // The old clickable block
     if (chatbotBlock) {
         chatbotBlock.addEventListener('click', () => {
             if (chatbotBlock.classList.contains('locked')) {
-                // If locked, redirect to login
+                // If the user is logged out, send them to the login page first.
                 window.location.href = '/auth.html';
             } else {
-                // If unlocked, open the chat window
-                chatbotBlock.classList.add('expanded');
-                document.body.style.overflow = 'hidden';
+                // If the user is logged in, redirect them to your Aastha chatbot app.
+                window.location.href = 'https://ai.studio/apps/drive/1YFM7hPE23joM6Y6wwK5afO8mzhs33jAv'; 
             }
         });
     }
-    if (closeChatButton) {
-        closeChatButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            if (chatbotBlock) {
-                chatbotBlock.classList.remove('expanded');
-                document.body.style.overflow = 'auto';
-            }
-        });
-    }
-
-    // --- 5. Chatbot Send Message Logic ---
-    // (This part stays the same)
-    const chatInput = document.getElementById('chatInput');
-    const sendMessageButton = document.getElementById('sendMessage');
-    const chatMessages = document.getElementById('chatMessages');
-    let chatHistory = [];
-	    const sendMessage = async () => {
-			if (!chatInput || !chatMessages) return;
-			const text = chatInput.value ? chatInput.value.trim() : '';
-			if (!text) return;
-
-			// Clear input and render user's message
-			chatInput.value = '';
-			const userMsg = document.createElement('div');
-			userMsg.className = 'message sent';
-			userMsg.textContent = text;
-			chatMessages.appendChild(userMsg);
-			chatMessages.scrollTop = chatMessages.scrollHeight;
-
-			// Track conversation history for the backend
-			chatHistory.push({ role: 'user', parts: [{ text }] });
-
-			// Add assistant placeholder
-			const placeholder = document.createElement('div');
-			placeholder.className = 'message received';
-			placeholder.textContent = '...';
-			chatMessages.appendChild(placeholder);
-			chatMessages.scrollTop = chatMessages.scrollHeight;
-
-			try {
-				const res = await fetch('/api/chat', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ message: text, history: chatHistory })
-				});
-
-				if (!res.ok) {
-					throw new Error(`Request failed (${res.status})`);
-				}
-
-				const data = await res.json();
-				const reply = data.response || 'No response';
-				placeholder.textContent = reply;
-				chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-				chatMessages.scrollTop = chatMessages.scrollHeight;
-			} catch (err) {
-				placeholder.textContent = `Error: ${err.message}`;
-			}
-	    };
-    if (sendMessageButton) sendMessageButton.addEventListener('click', sendMessage);
-    if (chatInput) chatInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') sendMessage();
-    });
-
-
+});
     // --- 5. Auth Page Logic (Login/Signup Forms & Tabs) ---
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
@@ -249,4 +184,3 @@ if (signupForm) {
             showLoginBtn.click();
         }
     }
-});
